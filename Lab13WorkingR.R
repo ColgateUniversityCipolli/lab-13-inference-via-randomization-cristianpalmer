@@ -2,6 +2,7 @@
 # Lab 13 
 library(tidyverse)
 library(e1071)
+library(boot)
 finches_data <- read_csv("zebrafinches.csv")
 
 # Question 1 Part A:
@@ -42,11 +43,61 @@ fz <- dnorm(t)
 
 (n <- ((skew/(6*0.10*a))*((2*t^2)+1)*fz)^2)
 
+###########################################################################
 
 # Question 2 Part A:
 
+# resamples.null.closer
+
+n <- 25
+R <- 10000
+resamples.null.closer <- tibble(t = rep(NA, R))
+
+for(i in 1:R){
+  curr.resample <- sample(finches_data$closer,
+                          size = nrow(finches_data),
+                          replace = T)
+  
+  resamples.null.closer$t[i] <- (mean(curr.resample))/(sd(finches_data$closer)/sqrt(n)) 
+}
+# Center 
+resamples.null.closer <- (resamples.null.closer)$t
+resamples.null.closer <- resamples.null.closer - mean(resamples.null.closer)
+
+# resamples.null.further
+
+n <- 25
+R <- 10000
+resamples.null.further <- tibble(t = rep(NA, R))
+
+for(i in 1:R){
+  curr.resample <- sample(finches_data$further,
+                          size = nrow(finches_data),
+                          replace = T)
+  
+  resamples.null.further$t[i] <- (mean(curr.resample))/(sd(finches_data$further)/sqrt(n)) 
+}
+# Center 
+resamples.null.further <- (resamples.null.further)$t
+resamples.null.further <- resamples.null.further - mean(resamples.null.further)
 
 
+# resamples.null.diff
+
+n <- 25
+R <- 10000
+resamples.null.diff <- tibble(t = rep(NA, R))
+
+for(i in 1:R){
+  curr.resample <- sample(finches_data$diff,
+                          size = nrow(finches_data),
+                          replace = T)
+  
+  resamples.null.diff$t[i] <- (mean(curr.resample))/(sd(finches_data$diff)/sqrt(n)) 
+}
+# Center 
+resamples.null.diff <- (resamples.null.diff)$t
+resamples.null.diff <- resamples.null.diff - mean(resamples.null.diff)
 
 
 # Question 2 Part B:
@@ -63,11 +114,6 @@ fz <- dnorm(t)
 
 
 # Question 2 Part D:
-
-
-
-
-
 
 
 
