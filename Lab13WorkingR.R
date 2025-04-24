@@ -3,6 +3,8 @@
 library(tidyverse)
 library(e1071)
 library(boot)
+library(boot.pval)
+
 finches_data <- read_csv("zebrafinches.csv")
 
 # Question 1 Part A:
@@ -102,10 +104,24 @@ resamples.null.diff <- resamples.null.diff - mean(resamples.null.diff)
 
 # Question 2 Part B:
 
+# Closer
+t_closer <- t.test(finches_data$closer, mu = 0, 
+                   conf.level = 0.95, alternative = "two.sided")$statistic
+(p_closer <- mean(resamples.null.closer >= t_closer))
 
+# Further
+t_further <- t.test(finches_data$further, mu = 0, 
+                    conf.level = 0.95, alternative = "two.sided")$statistic
+(p_further <- mean(resamples.null.further <= t_further))
 
-
-
+# Diff
+t_diff <- t.test(finches_data$diff, mu = 0, 
+                       conf.level = 0.95, alternative = "two.sided")$statistic
+low <- -8.510932 
+high <- 8.510932
+p.low = mean(resamples.null.diff <= low)
+p.high = mean(resamples.null.diff >= high)
+(p_diff = p.low + p.high)
 
 # Question 2 Part C:
 
