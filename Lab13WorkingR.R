@@ -12,7 +12,7 @@ t <- t.test(finches_data$further, mu = 0,
 fz <- dnorm(t)
 Fz <- pnorm(t)
 
-potential_error <- Fz+(skew/sqrt(n))*(((2*t^2)+1)/6)*fz
+(potential_error <- Fz+(skew/sqrt(n))*(((2*t^2)+1)/6)*fz)
 
 
 # Question 1 Part B:
@@ -34,9 +34,13 @@ ggplot(t_values, aes(x = values, y = t_stat)) +
 
 
 # Question 1 Part C:
+skew <- skewness(finches_data$further)
+a <- 0.05
 
+t <- qnorm(0.05)
+fz <- dnorm(t)
 
-
+(n <- ((skew/(6*0.10*a))*((2*t^2)+1)*fz)^2)
 
 
 # Question 2 Part A:
