@@ -229,6 +229,81 @@ p.high.rand = mean(rand.diff >= high)
 
 # Question 3 Part C:
 
+################################################################################
+# Randomization Test Confidence Interval Closer
+################################################################################
+R <- 10000
+mu0.iterate <- 0.01
+starting.point <- mean(finches_data$closer)
+
+mu.lower <- starting.point
+repeat{
+  rand <- tibble(t = rep(NA, R))
+  
+  # PREPROCESSING: shift the data to be mean 0 under H0
+  t.shift <- finches_data$closer - mu.lower
+  # RANDOMIZE / SHUFFLE
+  for(i in 1:R){
+    curr.rand <- t.shift *
+      sample(x = c(-1, 1),
+             size = length(t.shift),
+             replace = T)
+    
+    rand$t[i] <- mean(curr.rand)
+  }
+  # Thinking is hard
+  rand <- rand |>
+    mutate(t = t + mu.lower) # shifting back
+  
+  # p-value 
+  (delta <- abs(mean(dat$`PP Opp`) - mu.lower))
+  (low <- mu.lower - delta) # mirror
+  (high<- mu.lower + delta)   # xbar
+  (p.val <- mean(rand$xbars <= low) +
+      mean(rand$xbars >= high))
+  
+  if(p.val < 0.05){
+    break
+  }else{
+    mu.lower <- mu.lower - mu0.iterate
+  }
+}
+
+mu.upper <- starting.point
+repeat{
+  rand <- tibble(xbars = rep(NA, R))
+  
+  # PREPROCESSING: shift the data to be mean 0 under H0
+  x.shift <- dat$`PP Opp` - mu.upper
+  # RANDOMIZE / SHUFFLE
+  for(i in 1:R){
+    curr.rand <- x.shift *
+      sample(x = c(-1, 1),
+             size = length(x.shift),
+             replace = T)
+    
+    rand$xbars[i] <- mean(curr.rand)
+  }
+  # Thinking is hard
+  rand <- rand |>
+    mutate(xbars = xbars + mu.upper) # shifting back
+  
+  # p-value 
+  (delta <- abs(mean(dat$`PP Opp`) - mu.upper))
+  (low <- mu.upper - delta) # mirror
+  (high<- mu.upper + delta)   # xbar
+  (p.val <- mean(rand$xbars <= low) +
+      mean(rand$xbars >= high))
+  
+  if(p.val < 0.05){
+    break
+  }else{
+    mu.upper <- mu.upper + mu0.iterate
+  }
+}
+
+c(mu.lower, mu.upper)
+
 
 
 
