@@ -64,7 +64,7 @@ for(i in 1:R){
 }
 # Center 
 resamples.null.closer <- (resamples.null.closer)$t
-resamples.null.closer <- resamples.null.closer - mean(resamples.null.closer)
+resamples.null.closer.shifted <- resamples.null.closer - mean(resamples.null.closer)
 
 # resamples.null.further
 
@@ -81,7 +81,7 @@ for(i in 1:R){
 }
 # Center 
 resamples.null.further <- (resamples.null.further)$t
-resamples.null.further <- resamples.null.further - mean(resamples.null.further)
+resamples.null.further.shifted <- resamples.null.further - mean(resamples.null.further)
 
 
 # resamples.null.diff
@@ -99,7 +99,7 @@ for(i in 1:R){
 }
 # Center 
 resamples.null.diff <- (resamples.null.diff)$t
-resamples.null.diff <- resamples.null.diff - mean(resamples.null.diff)
+resamples.null.diff.shifted <- resamples.null.diff - mean(resamples.null.diff)
 
 
 # Question 2 Part B:
@@ -107,32 +107,56 @@ resamples.null.diff <- resamples.null.diff - mean(resamples.null.diff)
 # Closer
 t_closer <- t.test(finches_data$closer, mu = 0, 
                    conf.level = 0.95, alternative = "two.sided")$statistic
-(p_closer <- mean(resamples.null.closer >= t_closer))
+(p_closer <- mean(resamples.null.closer.shifted >= t_closer))
 
 # Further
 t_further <- t.test(finches_data$further, mu = 0, 
                     conf.level = 0.95, alternative = "two.sided")$statistic
-(p_further <- mean(resamples.null.further <= t_further))
+(p_further <- mean(resamples.null.further.shifted <= t_further))
 
 # Diff
 t_diff <- t.test(finches_data$diff, mu = 0, 
                        conf.level = 0.95, alternative = "two.sided")$statistic
 low <- -8.510932 
 high <- 8.510932
-p.low = mean(resamples.null.diff <= low)
-p.high = mean(resamples.null.diff >= high)
+p.low = mean(resamples.null.diff.shifted <= low)
+p.high = mean(resamples.null.diff.shifted >= high)
 (p_diff = p.low + p.high)
 
 # Question 2 Part C:
 
 # Closer
+(firth_percentile_closer <- quantile(resamples.null.closer.shifted, .005))
+
+# Further
+(firth_percentile_further <- quantile(resamples.null.further.shifted, .005))
+
+# Diff
+(firth_percentile_diff <- quantile(resamples.null.diff.shifted, .005))
+
+
+# Question 2 Part D:
+
+# Boot strap confidence intervals using resampling
+
+# Closer
+
+#quantile(resamples.null.closer.shifted, c(0.025, 0.975))
+
+#library(boot)
+
+#boot.t <- function(d, i){
+#  d[i]  
+#}
+#boots <- boot(data = resamples.null.closer.shifted,
+              statistic = boot.t,
+              R = R) 
+
+#boot.ci(boots, type="bca")
 
 # Further
 
 # Diff
-
-# Question 2 Part D:
-
 
 
 # Question 3 Part A:
