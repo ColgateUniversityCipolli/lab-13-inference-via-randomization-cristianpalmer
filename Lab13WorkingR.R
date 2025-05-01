@@ -149,8 +149,8 @@ p.high = mean(resamples.null.diff.shifted >= high)
 #  d[i]  
 #}
 #boots <- boot(data = resamples.null.closer.shifted,
-              statistic = boot.t,
-              R = R) 
+#              statistic = boot.t,
+#              R = R) 
 
 #boot.ci(boots, type="bca")
 
@@ -161,14 +161,48 @@ p.high = mean(resamples.null.diff.shifted >= high)
 
 # Question 3 Part A:
 
+# Randomization Test Closer
+
+rand.closer <- tibble(t = rep(NA, R))
+
+for(i in 1:R){
+  curr.rand <- resamples.null.closer.shifted *
+    sample(x = c(-1, 1),
+           size = length(resamples.null.closer.shifted),
+           replace = T)
+  
+  rand.closer$t[i] <- mean(curr.rand)
+}
+# Thinking is hard
+rand.closer <- rand.closer |>
+  mutate(t = t + mean(resamples.null.closer)) # shifting back
+
+# Randomization Test Farther
+
+rand.further <- tibble(t = rep(NA, R))
+
+for(i in 1:R){
+  curr.rand <- resamples.null.further.shifted *
+    sample(x = c(-1, 1),
+           size = length(resamples.null.further.shifted),
+           replace = T)
+  
+  rand.further$t[i] <- mean(curr.rand)
+}
+# Thinking is hard
+rand.further <- rand.further |>
+  mutate(t = t + mean(resamples.null.further)) # shifting back
 
 
 
 
 # Question 3 Part B:
 
+# closer randomization p-value
+(p_closer_randomization <- mean(rand.closer >= t_closer))
 
-
+# further randomization p-value
+(p_further_randomization <- mean(rand.further <= t_further))
 
 
 
