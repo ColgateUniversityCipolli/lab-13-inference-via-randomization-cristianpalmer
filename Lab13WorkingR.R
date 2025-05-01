@@ -117,8 +117,8 @@ t_further <- t.test(finches_data$further, mu = 0,
 # Diff
 t_diff <- t.test(finches_data$diff, mu = 0, 
                        conf.level = 0.95, alternative = "two.sided")$statistic
-low <- -8.510932 
-high <- 8.510932
+low <- -(t_diff) 
+high <- (t_diff)
 p.low = mean(resamples.null.diff.shifted <= low)
 p.high = mean(resamples.null.diff.shifted >= high)
 (p_diff = p.low + p.high)
@@ -174,10 +174,10 @@ for(i in 1:R){
   rand.closer$t[i] <- mean(curr.rand)
 }
 # Thinking is hard
-rand.closer <- rand.closer |>
+rand.closer.shifted <- rand.closer |>
   mutate(t = t + mean(resamples.null.closer)) # shifting back
 
-# Randomization Test Farther
+# Randomization Test Further
 
 rand.further <- tibble(t = rep(NA, R))
 
@@ -190,10 +190,24 @@ for(i in 1:R){
   rand.further$t[i] <- mean(curr.rand)
 }
 # Thinking is hard
-rand.further <- rand.further |>
+rand.further.shifted <- rand.further |>
   mutate(t = t + mean(resamples.null.further)) # shifting back
 
+# Randomization Test Diff
 
+rand.diff <- tibble(t = rep(NA, R))
+
+for(i in 1:R){
+  curr.rand <- resamples.null.diff.shifted *
+    sample(x = c(-1, 1),
+           size = length(resamples.null.diff.shifted),
+           replace = T)
+  
+  rand.diff$t[i] <- mean(curr.rand)
+}
+# Thinking is hard
+rand.diff.shifted <- rand.diff |>
+  mutate(t = t + mean(resamples.null.diff)) # shifting back
 
 
 # Question 3 Part B:
@@ -204,6 +218,13 @@ rand.further <- rand.further |>
 # further randomization p-value
 (p_further_randomization <- mean(rand.further <= t_further))
 
+# diff randomization p-value
+
+low <- -(t_diff) 
+high <- (t_diff)
+p.low.rand = mean(rand.diff <= low)
+p.high.rand = mean(rand.diff >= high)
+(p_diff_rand = p.low.rand + p.high.rand)
 
 
 # Question 3 Part C:
