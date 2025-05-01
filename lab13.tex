@@ -86,10 +86,37 @@ for the the further observations.
   skewness of the data. What is the potential error in the computation of the 
   $p$-value when testing $H_0: \mu_X=0; H_a: \mu_X<0$ using the zebra finch further data? 
 
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hldef{skew} \hlkwb{<-} \hlkwd{skewness}\hldef{(finches_data}\hlopt{$}\hldef{further)}
+\hldef{n} \hlkwb{<-} \hlnum{25}
+\hldef{t} \hlkwb{<-} \hlkwd{t.test}\hldef{(finches_data}\hlopt{$}\hldef{further,} \hlkwc{mu} \hldef{=} \hlnum{0}\hldef{,}
+                    \hlkwc{conf.level} \hldef{=} \hlnum{0.95}\hldef{,} \hlkwc{alternative} \hldef{=} \hlsng{"less"}\hldef{)}\hlopt{$}\hldef{statistic}
+\hldef{fz} \hlkwb{<-} \hlkwd{dnorm}\hldef{(t)}
+\hldef{Fz} \hlkwb{<-} \hlkwd{pnorm}\hldef{(t)}
+
+\hldef{(potential_error} \hlkwb{<-} \hldef{Fz}\hlopt{+}\hldef{(skew}\hlopt{/}\hlkwd{sqrt}\hldef{(n))}\hlopt{*}\hldef{(((}\hlnum{2}\hlopt{*}\hldef{t}\hlopt{^}\hlnum{2}\hldef{)}\hlopt{+}\hlnum{1}\hldef{)}\hlopt{/}\hlnum{6}\hldef{)}\hlopt{*}\hldef{fz)}
+\end{alltt}
+\begin{verbatim}
+##             t 
+## -1.189164e-13
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+The potential error is -1.189164e-13 which is approximately zero.
   \item Compute the error for $t$ statistics from -10 to 10 and plot a line
   that shows the error across $t$. Continue to use the skewness and 
   the sample size for the zebra finch further data.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-4-1} 
+
+}
+
+
+\end{knitrout}
   \item Suppose we wanted to have a tail probability within 10\% of the desired
   $\alpha=0.05$. Recall we did a left-tailed test using the further data.
   How large of a sample size would we need? That is, we need
@@ -97,6 +124,24 @@ for the the further observations.
   \[0.10 \alpha  \stackrel{set}{=} \underbrace{\frac{\text{skew}}{\sqrt{n}} \frac{(2t^2+1)}{6} f_Z(t)}_{\textrm{error}},\]
   which yields
   \[ n = \left(\frac{\text{skew}}{6(0.10\alpha)} (2t^2 + 1) f_Z(t)\right)^2.\]
+  
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hldef{skew} \hlkwb{<-} \hlkwd{skewness}\hldef{(finches_data}\hlopt{$}\hldef{further)}
+\hldef{a} \hlkwb{<-} \hlnum{0.05}
+
+\hldef{t} \hlkwb{<-} \hlkwd{qnorm}\hldef{(}\hlnum{0.05}\hldef{)}
+\hldef{fz} \hlkwb{<-} \hlkwd{dnorm}\hldef{(t)}
+
+\hldef{(n} \hlkwb{<-} \hldef{((skew}\hlopt{/}\hldef{(}\hlnum{6}\hlopt{*}\hlnum{0.10}\hlopt{*}\hldef{a))}\hlopt{*}\hldef{((}\hlnum{2}\hlopt{*}\hldef{t}\hlopt{^}\hlnum{2}\hldef{)}\hlopt{+}\hlnum{1}\hldef{)}\hlopt{*}\hldef{fz)}\hlopt{^}\hlnum{2}\hldef{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 520.8876
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+A sample size of 520.8876 would be required. Since we cannot have a fraction of a sample, we would realistically need a sample of 521.
 \end{enumerate}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -116,10 +161,146 @@ sampling distribution of the $T$ statistic:
   resamples shifted to ensure they are consistent with the null hypotheses at the average 
   (i.e., here ensure the shifted resamples are 0 on average, corresponding
   to $t=0$, for each case). 
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# resamples.null.closer}
+
+\hldef{n} \hlkwb{<-} \hlnum{25}
+\hldef{R} \hlkwb{<-} \hlnum{10000}
+\hldef{resamples.null.closer} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{t} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.resample} \hlkwb{<-} \hlkwd{sample}\hldef{(finches_data}\hlopt{$}\hldef{closer,}
+                          \hlkwc{size} \hldef{=} \hlkwd{nrow}\hldef{(finches_data),}
+                          \hlkwc{replace} \hldef{= T)}
+
+  \hldef{resamples.null.closer}\hlopt{$}\hldef{t[i]} \hlkwb{<-} \hldef{(}\hlkwd{mean}\hldef{(curr.resample))}\hlopt{/}\hldef{(}\hlkwd{sd}\hldef{(finches_data}\hlopt{$}\hldef{closer)}\hlopt{/}\hlkwd{sqrt}\hldef{(n))}
+\hldef{\}}
+\hlcom{# Center }
+\hldef{resamples.null.closer} \hlkwb{<-} \hldef{(resamples.null.closer)}\hlopt{$}\hldef{t}
+\hldef{resamples.null.closer.shifted} \hlkwb{<-} \hldef{resamples.null.closer} \hlopt{-} \hlkwd{mean}\hldef{(resamples.null.closer)}
+\hldef{(}\hlkwd{mean}\hldef{(resamples.null.closer.shifted))}
+\end{alltt}
+\begin{verbatim}
+## [1] -3.329559e-16
+\end{verbatim}
+\begin{alltt}
+\hlcom{# resamples.null.further}
+
+\hldef{n} \hlkwb{<-} \hlnum{25}
+\hldef{R} \hlkwb{<-} \hlnum{10000}
+\hldef{resamples.null.further} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{t} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.resample} \hlkwb{<-} \hlkwd{sample}\hldef{(finches_data}\hlopt{$}\hldef{further,}
+                          \hlkwc{size} \hldef{=} \hlkwd{nrow}\hldef{(finches_data),}
+                          \hlkwc{replace} \hldef{= T)}
+
+  \hldef{resamples.null.further}\hlopt{$}\hldef{t[i]} \hlkwb{<-} \hldef{(}\hlkwd{mean}\hldef{(curr.resample))}\hlopt{/}\hldef{(}\hlkwd{sd}\hldef{(finches_data}\hlopt{$}\hldef{further)}\hlopt{/}\hlkwd{sqrt}\hldef{(n))}
+\hldef{\}}
+\hlcom{# Center }
+\hldef{resamples.null.further} \hlkwb{<-} \hldef{(resamples.null.further)}\hlopt{$}\hldef{t}
+\hldef{resamples.null.further.shifted} \hlkwb{<-} \hldef{resamples.null.further} \hlopt{-} \hlkwd{mean}\hldef{(resamples.null.further)}
+\hldef{(}\hlkwd{mean}\hldef{(resamples.null.further.shifted))}
+\end{alltt}
+\begin{verbatim}
+## [1] 3.730349e-18
+\end{verbatim}
+\begin{alltt}
+\hlcom{# resamples.null.diff}
+
+\hldef{n} \hlkwb{<-} \hlnum{25}
+\hldef{R} \hlkwb{<-} \hlnum{10000}
+\hldef{resamples.null.diff} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{t} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.resample} \hlkwb{<-} \hlkwd{sample}\hldef{(finches_data}\hlopt{$}\hldef{diff,}
+                          \hlkwc{size} \hldef{=} \hlkwd{nrow}\hldef{(finches_data),}
+                          \hlkwc{replace} \hldef{= T)}
+
+  \hldef{resamples.null.diff}\hlopt{$}\hldef{t[i]} \hlkwb{<-} \hldef{(}\hlkwd{mean}\hldef{(curr.resample))}\hlopt{/}\hldef{(}\hlkwd{sd}\hldef{(finches_data}\hlopt{$}\hldef{diff)}\hlopt{/}\hlkwd{sqrt}\hldef{(n))}
+\hldef{\}}
+\hlcom{# Center }
+\hldef{resamples.null.diff} \hlkwb{<-} \hldef{(resamples.null.diff)}\hlopt{$}\hldef{t}
+\hldef{resamples.null.diff.shifted} \hlkwb{<-} \hldef{resamples.null.diff} \hlopt{-} \hlkwd{mean}\hldef{(resamples.null.diff)}
+\hldef{(}\hlkwd{mean}\hldef{(resamples.null.diff.shifted))}
+\end{alltt}
+\begin{verbatim}
+## [1] 1.154326e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
   \item Compute the bootstrap $p$-value for each test using the shifted resamples. 
   How do these compare to the $t$-test $p$-values?
+  
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Closer}
+\hldef{t_closer} \hlkwb{<-} \hlkwd{t.test}\hldef{(finches_data}\hlopt{$}\hldef{closer,} \hlkwc{mu} \hldef{=} \hlnum{0}\hldef{,}
+                   \hlkwc{conf.level} \hldef{=} \hlnum{0.95}\hldef{,} \hlkwc{alternative} \hldef{=} \hlsng{"two.sided"}\hldef{)}\hlopt{$}\hldef{statistic}
+\hldef{(p_closer} \hlkwb{<-} \hlkwd{mean}\hldef{(resamples.null.closer.shifted} \hlopt{>=} \hldef{t_closer))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Further}
+\hldef{t_further} \hlkwb{<-} \hlkwd{t.test}\hldef{(finches_data}\hlopt{$}\hldef{further,} \hlkwc{mu} \hldef{=} \hlnum{0}\hldef{,}
+                    \hlkwc{conf.level} \hldef{=} \hlnum{0.95}\hldef{,} \hlkwc{alternative} \hldef{=} \hlsng{"two.sided"}\hldef{)}\hlopt{$}\hldef{statistic}
+\hldef{(p_further} \hlkwb{<-} \hlkwd{mean}\hldef{(resamples.null.further.shifted} \hlopt{<=} \hldef{t_further))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Diff}
+\hldef{t_diff} \hlkwb{<-} \hlkwd{t.test}\hldef{(finches_data}\hlopt{$}\hldef{diff,} \hlkwc{mu} \hldef{=} \hlnum{0}\hldef{,}
+                       \hlkwc{conf.level} \hldef{=} \hlnum{0.95}\hldef{,} \hlkwc{alternative} \hldef{=} \hlsng{"two.sided"}\hldef{)}\hlopt{$}\hldef{statistic}
+\hldef{low} \hlkwb{<-} \hlopt{-}\hldef{(t_diff)}
+\hldef{high} \hlkwb{<-} \hldef{(t_diff)}
+\hldef{p.low} \hlkwb{=} \hlkwd{mean}\hldef{(resamples.null.diff.shifted} \hlopt{<=} \hldef{low)}
+\hldef{p.high} \hlkwb{=} \hlkwd{mean}\hldef{(resamples.null.diff.shifted} \hlopt{>=} \hldef{high)}
+\hldef{(p_diff} \hlkwb{=} \hldef{p.low} \hlopt{+} \hldef{p.high)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+All three of the p-values are 0 which is what we expected. In lab 11, all three of the t-test p-values were also virtually zero.
     \item What is the 5$^{th}$ percentile of the shifted resamples under the null hypothesis? 
   Note this value approximates $t_{0.05, n-1}$. Compare these values in each case.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Closer}
+\hldef{(firth_percentile_closer} \hlkwb{<-} \hlkwd{quantile}\hldef{(resamples.null.closer.shifted,} \hlnum{.005}\hldef{))}
+\end{alltt}
+\begin{verbatim}
+##      0.5% 
+## -2.440847
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Further}
+\hldef{(firth_percentile_further} \hlkwb{<-} \hlkwd{quantile}\hldef{(resamples.null.further.shifted,} \hlnum{.005}\hldef{))}
+\end{alltt}
+\begin{verbatim}
+##      0.5% 
+## -2.691696
+\end{verbatim}
+\begin{alltt}
+\hlcom{# Diff}
+\hldef{(firth_percentile_diff} \hlkwb{<-} \hlkwd{quantile}\hldef{(resamples.null.diff.shifted,} \hlnum{.005}\hldef{))}
+\end{alltt}
+\begin{verbatim}
+##      0.5% 
+## -2.370905
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+In all three cases the values are very similar to one another which is what we expected.
   \item Compute the bootstrap confidence intervals using the resamples. How do these 
   compare to the $t$-test confidence intervals?
 \end{enumerate}
@@ -133,7 +314,90 @@ randomization procedure.
 \begin{enumerate}
 \item Now, consider the zebra finch data. We do not know the generating distributions
 for the closer, further, and difference data, so perform the randomization procedure
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Randomization Test Closer}
+
+\hldef{rand.closer} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{t} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.rand} \hlkwb{<-} \hldef{resamples.null.closer.shifted} \hlopt{*}
+    \hlkwd{sample}\hldef{(}\hlkwc{x} \hldef{=} \hlkwd{c}\hldef{(}\hlopt{-}\hlnum{1}\hldef{,} \hlnum{1}\hldef{),}
+           \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(resamples.null.closer.shifted),}
+           \hlkwc{replace} \hldef{= T)}
+
+  \hldef{rand.closer}\hlopt{$}\hldef{t[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.rand)}
+\hldef{\}}
+\hlcom{# Thinking is hard}
+\hldef{rand.closer.shifted} \hlkwb{<-} \hldef{rand.closer |>}
+  \hlkwd{mutate}\hldef{(}\hlkwc{t} \hldef{= t} \hlopt{+} \hlkwd{mean}\hldef{(resamples.null.closer))} \hlcom{# shifting back}
+
+\hlcom{# Randomization Test Further}
+
+\hldef{rand.further} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{t} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.rand} \hlkwb{<-} \hldef{resamples.null.further.shifted} \hlopt{*}
+    \hlkwd{sample}\hldef{(}\hlkwc{x} \hldef{=} \hlkwd{c}\hldef{(}\hlopt{-}\hlnum{1}\hldef{,} \hlnum{1}\hldef{),}
+           \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(resamples.null.further.shifted),}
+           \hlkwc{replace} \hldef{= T)}
+
+  \hldef{rand.further}\hlopt{$}\hldef{t[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.rand)}
+\hldef{\}}
+\hlcom{# Thinking is hard}
+\hldef{rand.further.shifted} \hlkwb{<-} \hldef{rand.further |>}
+  \hlkwd{mutate}\hldef{(}\hlkwc{t} \hldef{= t} \hlopt{+} \hlkwd{mean}\hldef{(resamples.null.further))} \hlcom{# shifting back}
+
+\hlcom{# Randomization Test Diff}
+
+\hldef{rand.diff} \hlkwb{<-} \hlkwd{tibble}\hldef{(}\hlkwc{t} \hldef{=} \hlkwd{rep}\hldef{(}\hlnum{NA}\hldef{, R))}
+
+\hlkwa{for}\hldef{(i} \hlkwa{in} \hlnum{1}\hlopt{:}\hldef{R)\{}
+  \hldef{curr.rand} \hlkwb{<-} \hldef{resamples.null.diff.shifted} \hlopt{*}
+    \hlkwd{sample}\hldef{(}\hlkwc{x} \hldef{=} \hlkwd{c}\hldef{(}\hlopt{-}\hlnum{1}\hldef{,} \hlnum{1}\hldef{),}
+           \hlkwc{size} \hldef{=} \hlkwd{length}\hldef{(resamples.null.diff.shifted),}
+           \hlkwc{replace} \hldef{= T)}
+
+  \hldef{rand.diff}\hlopt{$}\hldef{t[i]} \hlkwb{<-} \hlkwd{mean}\hldef{(curr.rand)}
+\hldef{\}}
+\hlcom{# Thinking is hard}
+\hldef{rand.diff.shifted} \hlkwb{<-} \hldef{rand.diff |>}
+  \hlkwd{mutate}\hldef{(}\hlkwc{t} \hldef{= t} \hlopt{+} \hlkwd{mean}\hldef{(resamples.null.diff))} \hlcom{# shifting back}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
   \item Compute the randomization test $p$-value for each test.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# closer randomization p-value}
+\hldef{(p_closer_randomization} \hlkwb{<-} \hlkwd{mean}\hldef{(rand.closer} \hlopt{>=} \hldef{t_closer))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hlcom{# further randomization p-value}
+\hldef{(p_further_randomization} \hlkwb{<-} \hlkwd{mean}\hldef{(rand.further} \hlopt{<=} \hldef{t_further))}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\begin{alltt}
+\hlcom{# diff randomization p-value}
+\hldef{low} \hlkwb{<-} \hlopt{-}\hldef{(t_diff)}
+\hldef{high} \hlkwb{<-} \hldef{(t_diff)}
+\hldef{p.low.rand} \hlkwb{=} \hlkwd{mean}\hldef{(rand.diff} \hlopt{<=} \hldef{low)}
+\hldef{p.high.rand} \hlkwb{=} \hlkwd{mean}\hldef{(rand.diff} \hlopt{>=} \hldef{high)}
+\hldef{(p_diff_rand} \hlkwb{=} \hldef{p.low.rand} \hlopt{+} \hldef{p.high.rand)}
+\end{alltt}
+\begin{verbatim}
+## [1] 0
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
   \item Compute the randomization confidence interval by iterating over values of $\mu_0$.\\
   \textbf{Hint:} You can ``search" for the lower bound from $Q_1$ and subtracting by 0.0001, 
   and the upper bound using $Q_3$ and increasing by 0.0001. You will continue until you find 

@@ -37,11 +37,43 @@ for the the further observations.
   where $f_Z(\cdot)$ and $F_Z(\cdot)$ are the Gaussian PDF and CDF and skew is the
   skewness of the data. What is the potential error in the computation of the 
   $p$-value when testing $H_0: \mu_X=0; H_a: \mu_X<0$ using the zebra finch further data? 
+<<echo=FALSE,include=FALSE>>=
+library(tidyverse)
+library(e1071)
+finches_data <- read_csv("zebrafinches.csv")
+@
+<<>>=
+skew <- skewness(finches_data$further)
+n <- 25
+t <- t.test(finches_data$further, mu = 0, 
+                    conf.level = 0.95, alternative = "less")$statistic 
+fz <- dnorm(t)
+Fz <- pnorm(t)
 
+(potential_error <- Fz+(skew/sqrt(n))*(((2*t^2)+1)/6)*fz)
+@
+The potential error is -1.189164e-13 which is approximately zero.
   \item Compute the error for $t$ statistics from -10 to 10 and plot a line
   that shows the error across $t$. Continue to use the skewness and 
   the sample size for the zebra finch further data.
+<<echo=FALSE, fig.align='center', fig.width=5, fig.height=3>>=
+# Question 1 Part B:
+skew <- skewness(finches_data$further)
+n <- 25
+values <- seq(-10, 10, by = 0.001)
+t_values <- tibble(t_stat = numeric(length(values)))
+for (i in 1:length(values)) {
+  fz <- dnorm(values[i])
+  Fz <- pnorm(values[i])
+  potential_error <- (skew/sqrt(n))*(((2*values[i]^2)+1)/6)*fz
+  t_values$t_stat[i] <- potential_error
+}
 
+ggplot(t_values, aes(x = values, y = t_stat)) +
+  geom_line(color = "blue") +  # Line plot
+  labs(title = "Potential Error vs. t from -10 to 10", x = "t", y = "Potential Error") +
+  theme_minimal()
+@
   \item Suppose we wanted to have a tail probability within 10\% of the desired
   $\alpha=0.05$. Recall we did a left-tailed test using the further data.
   How large of a sample size would we need? That is, we need
@@ -49,6 +81,17 @@ for the the further observations.
   \[0.10 \alpha  \stackrel{set}{=} \underbrace{\frac{\text{skew}}{\sqrt{n}} \frac{(2t^2+1)}{6} f_Z(t)}_{\textrm{error}},\]
   which yields
   \[ n = \left(\frac{\text{skew}}{6(0.10\alpha)} (2t^2 + 1) f_Z(t)\right)^2.\]
+  
+<<>>=
+skew <- skewness(finches_data$further)
+a <- 0.05
+
+t <- qnorm(0.05)
+fz <- dnorm(t)
+
+(n <- ((skew/(6*0.10*a))*((2*t^2)+1)*fz)^2)
+@
+A sample size of 520.8876 would be required. Since we cannot have a fraction of a sample, we would realistically need a sample of 521.
 \end{enumerate}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -68,10 +111,98 @@ sampling distribution of the $T$ statistic:
   resamples shifted to ensure they are consistent with the null hypotheses at the average 
   (i.e., here ensure the shifted resamples are 0 on average, corresponding
   to $t=0$, for each case). 
+<<>>=
+# resamples.null.closer
+
+n <- 25
+R <- 10000
+resamples.null.closer <- tibble(t = rep(NA, R))
+
+for(i in 1:R){
+  curr.resample <- sample(finches_data$closer,
+                          size = nrow(finches_data),
+                          replace = T)
+  
+  resamples.null.closer$t[i] <- (mean(curr.resample))/(sd(finches_data$closer)/sqrt(n)) 
+}
+# Center 
+resamples.null.closer <- (resamples.null.closer)$t
+resamples.null.closer.shifted <- resamples.null.closer - mean(resamples.null.closer)
+(mean(resamples.null.closer.shifted))
+
+# resamples.null.further
+
+n <- 25
+R <- 10000
+resamples.null.further <- tibble(t = rep(NA, R))
+
+for(i in 1:R){
+  curr.resample <- sample(finches_data$further,
+                          size = nrow(finches_data),
+                          replace = T)
+  
+  resamples.null.further$t[i] <- (mean(curr.resample))/(sd(finches_data$further)/sqrt(n)) 
+}
+# Center 
+resamples.null.further <- (resamples.null.further)$t
+resamples.null.further.shifted <- resamples.null.further - mean(resamples.null.further)
+(mean(resamples.null.further.shifted))
+
+# resamples.null.diff
+
+n <- 25
+R <- 10000
+resamples.null.diff <- tibble(t = rep(NA, R))
+
+for(i in 1:R){
+  curr.resample <- sample(finches_data$diff,
+                          size = nrow(finches_data),
+                          replace = T)
+  
+  resamples.null.diff$t[i] <- (mean(curr.resample))/(sd(finches_data$diff)/sqrt(n)) 
+}
+# Center 
+resamples.null.diff <- (resamples.null.diff)$t
+resamples.null.diff.shifted <- resamples.null.diff - mean(resamples.null.diff)
+(mean(resamples.null.diff.shifted))
+@
   \item Compute the bootstrap $p$-value for each test using the shifted resamples. 
   How do these compare to the $t$-test $p$-values?
+  
+<<>>=
+# Closer
+t_closer <- t.test(finches_data$closer, mu = 0, 
+                   conf.level = 0.95, alternative = "two.sided")$statistic
+(p_closer <- mean(resamples.null.closer.shifted >= t_closer))
+
+# Further
+t_further <- t.test(finches_data$further, mu = 0, 
+                    conf.level = 0.95, alternative = "two.sided")$statistic
+(p_further <- mean(resamples.null.further.shifted <= t_further))
+
+# Diff
+t_diff <- t.test(finches_data$diff, mu = 0, 
+                       conf.level = 0.95, alternative = "two.sided")$statistic
+low <- -(t_diff) 
+high <- (t_diff)
+p.low = mean(resamples.null.diff.shifted <= low)
+p.high = mean(resamples.null.diff.shifted >= high)
+(p_diff = p.low + p.high)
+@
+All three of the p-values are 0 which is what we expected. In lab 11, all three of the t-test p-values were also virtually zero.
     \item What is the 5$^{th}$ percentile of the shifted resamples under the null hypothesis? 
   Note this value approximates $t_{0.05, n-1}$. Compare these values in each case.
+  <<>>=
+# Closer
+(firth_percentile_closer <- quantile(resamples.null.closer.shifted, .005))
+
+# Further
+(firth_percentile_further <- quantile(resamples.null.further.shifted, .005))
+
+# Diff
+(firth_percentile_diff <- quantile(resamples.null.diff.shifted, .005))
+@
+In all three cases the values are very similar to one another which is what we expected.
   \item Compute the bootstrap confidence intervals using the resamples. How do these 
   compare to the $t$-test confidence intervals?
 \end{enumerate}
@@ -85,7 +216,72 @@ randomization procedure.
 \begin{enumerate}
 \item Now, consider the zebra finch data. We do not know the generating distributions
 for the closer, further, and difference data, so perform the randomization procedure
+<<>>=
+# Randomization Test Closer
+
+rand.closer <- tibble(t = rep(NA, R))
+
+for(i in 1:R){
+  curr.rand <- resamples.null.closer.shifted *
+    sample(x = c(-1, 1),
+           size = length(resamples.null.closer.shifted),
+           replace = T)
+  
+  rand.closer$t[i] <- mean(curr.rand)
+}
+# Thinking is hard
+rand.closer.shifted <- rand.closer |>
+  mutate(t = t + mean(resamples.null.closer)) # shifting back
+
+# Randomization Test Further
+
+rand.further <- tibble(t = rep(NA, R))
+
+for(i in 1:R){
+  curr.rand <- resamples.null.further.shifted *
+    sample(x = c(-1, 1),
+           size = length(resamples.null.further.shifted),
+           replace = T)
+  
+  rand.further$t[i] <- mean(curr.rand)
+}
+# Thinking is hard
+rand.further.shifted <- rand.further |>
+  mutate(t = t + mean(resamples.null.further)) # shifting back
+
+# Randomization Test Diff
+
+rand.diff <- tibble(t = rep(NA, R))
+
+for(i in 1:R){
+  curr.rand <- resamples.null.diff.shifted *
+    sample(x = c(-1, 1),
+           size = length(resamples.null.diff.shifted),
+           replace = T)
+  
+  rand.diff$t[i] <- mean(curr.rand)
+}
+# Thinking is hard
+rand.diff.shifted <- rand.diff |>
+  mutate(t = t + mean(resamples.null.diff)) # shifting back
+
+@
   \item Compute the randomization test $p$-value for each test.
+<<>>=
+# closer randomization p-value
+(p_closer_randomization <- mean(rand.closer >= t_closer))
+
+# further randomization p-value
+(p_further_randomization <- mean(rand.further <= t_further))
+
+# diff randomization p-value
+low <- -(t_diff) 
+high <- (t_diff)
+p.low.rand = mean(rand.diff <= low)
+p.high.rand = mean(rand.diff >= high)
+(p_diff_rand = p.low.rand + p.high.rand)
+@
+
   \item Compute the randomization confidence interval by iterating over values of $\mu_0$.\\
   \textbf{Hint:} You can ``search" for the lower bound from $Q_1$ and subtracting by 0.0001, 
   and the upper bound using $Q_3$ and increasing by 0.0001. You will continue until you find 
