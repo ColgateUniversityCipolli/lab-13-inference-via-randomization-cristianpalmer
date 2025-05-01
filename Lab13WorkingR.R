@@ -125,9 +125,11 @@ p.high = mean(resamples.null.diff >= high)
 
 # Question 2 Part C:
 
+# Closer
 
+# Further
 
-
+# Diff
 
 # Question 2 Part D:
 
