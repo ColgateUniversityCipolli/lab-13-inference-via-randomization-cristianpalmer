@@ -126,13 +126,17 @@ p.high = mean(resamples.null.diff.shifted >= high)
 # Question 2 Part C:
 
 # Closer
-(firth_percentile_closer <- quantile(resamples.null.closer.shifted, .005))
+(firth_percentile_closer <- quantile(resamples.null.closer.shifted, .05))
+(firth_percentile_closer_t <- qt(0.05, df=length(finches_data$closer-1)))
 
 # Further
-(firth_percentile_further <- quantile(resamples.null.further.shifted, .005))
+(firth_percentile_further <- quantile(resamples.null.further.shifted, .05))
+(firth_percentile_further_t <- qt(0.05, df=length(finches_data$further-1)))
 
 # Diff
-(firth_percentile_diff <- quantile(resamples.null.diff.shifted, .005))
+(firth_percentile_diff <- quantile(resamples.null.diff.shifted, .05))
+(firth_percentile_diff_t <- qt(0.05, df=length(finches_data$diff-1)))
+
 
 
 # Question 2 Part D:
@@ -141,22 +145,29 @@ p.high = mean(resamples.null.diff.shifted >= high)
 
 # Closer
 
-#quantile(resamples.null.closer.shifted, c(0.025, 0.975))
+library(boot)
+boot.t <- function(d, i){
+  d[i]  
+}
+boots.closer <- boot(data = finches_data$closer,
+              statistic = boot.t,
+              R = R) 
 
-#library(boot)
-
-#boot.t <- function(d, i){
-#  d[i]  
-#}
-#boots <- boot(data = resamples.null.closer.shifted,
-#              statistic = boot.t,
-#              R = R) 
-
-#boot.ci(boots, type="bca")
+boot.ci(boots.closer, type="bca")
 
 # Further
+boots.further <- boot(data = finches_data$closer,
+                     statistic = boot.t,
+                     R = R) 
+
+boot.ci(boots.further, type="bca")
 
 # Diff
+boots.diff <- boot(data = finches_data$closer,
+                      statistic = boot.t,
+                      R = R) 
+
+boot.ci(boots.diff, type="bca")
 
 
 # Question 3 Part A:

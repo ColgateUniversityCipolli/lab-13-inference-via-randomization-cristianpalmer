@@ -194,13 +194,17 @@ All three of the p-values are 0 which is what we expected. In lab 11, all three 
   Note this value approximates $t_{0.05, n-1}$. Compare these values in each case.
   <<>>=
 # Closer
-(firth_percentile_closer <- quantile(resamples.null.closer.shifted, .005))
+(firth_percentile_closer <- quantile(resamples.null.closer.shifted, .05))
+(firth_percentile_closer_t <- qt(0.05, df=length(finches_data$closer-1)))
+
 
 # Further
-(firth_percentile_further <- quantile(resamples.null.further.shifted, .005))
+(firth_percentile_further <- quantile(resamples.null.further.shifted, .05))
+(firth_percentile_further_t <- qt(0.05, df=length(finches_data$further-1)))
 
 # Diff
-(firth_percentile_diff <- quantile(resamples.null.diff.shifted, .005))
+(firth_percentile_diff <- quantile(resamples.null.diff.shifted, .05))
+(firth_percentile_diff_t <- qt(0.05, df=length(finches_data$diff-1)))
 @
 In all three cases the values are very similar to one another which is what we expected.
   \item Compute the bootstrap confidence intervals using the resamples. How do these 

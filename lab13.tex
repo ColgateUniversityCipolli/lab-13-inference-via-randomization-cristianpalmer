@@ -183,7 +183,7 @@ sampling distribution of the $T$ statistic:
 \hldef{(}\hlkwd{mean}\hldef{(resamples.null.closer.shifted))}
 \end{alltt}
 \begin{verbatim}
-## [1] -3.329559e-16
+## [1] -7.001941e-16
 \end{verbatim}
 \begin{alltt}
 \hlcom{# resamples.null.further}
@@ -205,7 +205,7 @@ sampling distribution of the $T$ statistic:
 \hldef{(}\hlkwd{mean}\hldef{(resamples.null.further.shifted))}
 \end{alltt}
 \begin{verbatim}
-## [1] 3.730349e-18
+## [1] -1.915357e-16
 \end{verbatim}
 \begin{alltt}
 \hlcom{# resamples.null.diff}
@@ -227,7 +227,7 @@ sampling distribution of the $T$ statistic:
 \hldef{(}\hlkwd{mean}\hldef{(resamples.null.diff.shifted))}
 \end{alltt}
 \begin{verbatim}
-## [1] 1.154326e-16
+## [1] 6.38134e-16
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -276,27 +276,45 @@ All three of the p-values are 0 which is what we expected. In lab 11, all three 
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlcom{# Closer}
-\hldef{(firth_percentile_closer} \hlkwb{<-} \hlkwd{quantile}\hldef{(resamples.null.closer.shifted,} \hlnum{.005}\hldef{))}
+\hldef{(firth_percentile_closer} \hlkwb{<-} \hlkwd{quantile}\hldef{(resamples.null.closer.shifted,} \hlnum{.05}\hldef{))}
 \end{alltt}
 \begin{verbatim}
-##      0.5% 
-## -2.440847
+##        5% 
+## -1.599281
+\end{verbatim}
+\begin{alltt}
+\hldef{(firth_percentile_closer_t} \hlkwb{<-} \hlkwd{qt}\hldef{(}\hlnum{0.05}\hldef{,} \hlkwc{df}\hldef{=}\hlkwd{length}\hldef{(finches_data}\hlopt{$}\hldef{closer}\hlopt{-}\hlnum{1}\hldef{)))}
+\end{alltt}
+\begin{verbatim}
+## [1] -1.708141
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Further}
-\hldef{(firth_percentile_further} \hlkwb{<-} \hlkwd{quantile}\hldef{(resamples.null.further.shifted,} \hlnum{.005}\hldef{))}
+\hldef{(firth_percentile_further} \hlkwb{<-} \hlkwd{quantile}\hldef{(resamples.null.further.shifted,} \hlnum{.05}\hldef{))}
 \end{alltt}
 \begin{verbatim}
-##      0.5% 
-## -2.691696
+##        5% 
+## -1.674602
+\end{verbatim}
+\begin{alltt}
+\hldef{(firth_percentile_further_t} \hlkwb{<-} \hlkwd{qt}\hldef{(}\hlnum{0.05}\hldef{,} \hlkwc{df}\hldef{=}\hlkwd{length}\hldef{(finches_data}\hlopt{$}\hldef{further}\hlopt{-}\hlnum{1}\hldef{)))}
+\end{alltt}
+\begin{verbatim}
+## [1] -1.708141
 \end{verbatim}
 \begin{alltt}
 \hlcom{# Diff}
-\hldef{(firth_percentile_diff} \hlkwb{<-} \hlkwd{quantile}\hldef{(resamples.null.diff.shifted,} \hlnum{.005}\hldef{))}
+\hldef{(firth_percentile_diff} \hlkwb{<-} \hlkwd{quantile}\hldef{(resamples.null.diff.shifted,} \hlnum{.05}\hldef{))}
 \end{alltt}
 \begin{verbatim}
-##      0.5% 
-## -2.370905
+##        5% 
+## -1.563979
+\end{verbatim}
+\begin{alltt}
+\hldef{(firth_percentile_diff_t} \hlkwb{<-} \hlkwd{qt}\hldef{(}\hlnum{0.05}\hldef{,} \hlkwc{df}\hldef{=}\hlkwd{length}\hldef{(finches_data}\hlopt{$}\hldef{diff}\hlopt{-}\hlnum{1}\hldef{)))}
+\end{alltt}
+\begin{verbatim}
+## [1] -1.708141
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
