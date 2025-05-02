@@ -239,3 +239,230 @@ p.high.rand = mean(rand.diff >= high)
 
 # Question 3 Part C:
 
+# Closer
+mu0.iterate <- 0.01
+starting.point.closer <- mean(finches_data$closer)
+
+mu.lower.closer <- starting.point.closer
+repeat{
+  rand.closer <- tibble(xbars = rep(NA, R))
+  
+  # PREPROCESSING: shift the data to be mean 0 under H0
+  x.shift.closer <- finches_data$closer - mu.lower.closer
+  # RANDOMIZE / SHUFFLE
+  for(i in 1:R){
+    curr.rand <- x.shift.closer *
+      sample(x = c(-1, 1),
+             size = length(x.shift.closer),
+             replace = T)
+    
+    rand.closer$xbars[i] <- mean(curr.rand)
+  }
+  # Thinking is hard
+  rand.closer <- rand.closer |>
+    mutate(xbars = xbars + mu.lower.closer) # shifting back
+  
+  # p-value  (one-sided)
+  obs.mean.closer <- mean(finches_data$closer)
+  p.val.closer <- mean(rand.closer$xbars >= obs.mean.closer)
+  
+  if(p.val.closer < 0.05){
+    break
+  }else{
+    mu.lower.closer <- mu.lower.closer - mu0.iterate
+  }
+}
+
+mu.upper.closer <- starting.point.closer
+repeat{
+  rand.closer <- tibble(xbars = rep(NA, R))
+  
+  # PREPROCESSING: shift the data to be mean 0 under H0
+  x.shift.closer <- finches_data$closer - mu.upper.closer
+  # RANDOMIZE / SHUFFLE
+  for(i in 1:R){
+    curr.rand <- x.shift.closer *
+      sample(x = c(-1, 1),
+             size = length(x.shift.closer),
+             replace = T)
+    
+    rand.closer$xbars[i] <- mean(curr.rand)
+  }
+  # Thinking is hard
+  rand.closer <- rand.closer |>
+    mutate(xbars = xbars + mu.upper.closer) # shifting back
+  
+  # p-value  (one-sided)
+  obs.mean.closer <- mean(finches_data$closer)
+  p.val.closer <- mean(rand.closer$xbars <= obs.mean.closer)
+  
+  if(p.val.closer < 0.05){
+    break
+  }else{
+    mu.upper.closer <- mu.upper.closer + mu0.iterate
+  }
+}
+
+(closer.rand.CI <- c(mu.lower.closer, mu.upper.closer))
+
+# Further
+mu0 <- 0
+rand.further <- tibble(xbars = rep(NA, R))
+
+# PREPROCESSING: shift the data to be mean 0 under H0
+x.shift.further <- finches_data$further - mu0
+# RANDOMIZE / SHUFFLE
+for(i in 1:R){
+  curr.rand <- x.shift.further *
+    sample(x = c(-1, 1),
+           size = length(x.shift.further),
+           replace = T)
+  
+  rand.further$xbars[i] <- mean(curr.rand)
+}
+rand.further <- rand.further |>
+  mutate(xbars = xbars + mu0) # shifting back
+
+# p-value 
+obs.mean.further <- mean(finches_data$further)
+p.rand.further <- mean(rand.further$xbars <= obs.mean.further)
+
+## Confidence Interval ##
+R <- 1000
+mu0.iterate <- 0.01
+starting.point.further <- mean(finches_data$further)
+
+mu.lower.further <- starting.point.further
+repeat{
+  rand.further <- tibble(xbars = rep(NA, R))
+  
+  # PREPROCESSING: shift the data to be mean 0 under H0
+  x.shift.further <- finches_data$further - mu.lower.further
+  # RANDOMIZE / SHUFFLE
+  for(i in 1:R){
+    curr.rand <- x.shift.further *
+      sample(x = c(-1, 1),
+             size = length(x.shift.further),
+             replace = T)
+    
+    rand.further$xbars[i] <- mean(curr.rand)
+  }
+  # Thinking is hard
+  rand.further <- rand.further |>
+    mutate(xbars = xbars + mu.lower.further) # shifting back
+  
+  # p-value  (one-sided)
+  obs.mean.further <- mean(finches_data$further)
+  p.val.further <- mean(rand.further$xbars >= obs.mean.further)
+  
+  if(p.val.further < 0.05){
+    break
+  }else{
+    mu.lower.further <- mu.lower.further - mu0.iterate
+  }
+}
+
+mu.upper.further <- starting.point.further
+repeat{
+  rand.further <- tibble(xbars = rep(NA, R))
+  
+  # PREPROCESSING: shift the data to be mean 0 under H0
+  x.shift.further <- finches_data$further - mu.upper.further
+  # RANDOMIZE / SHUFFLE
+  for(i in 1:R){
+    curr.rand <- x.shift.further *
+      sample(x = c(-1, 1),
+             size = length(x.shift.further),
+             replace = T)
+    
+    rand.further$xbars[i] <- mean(curr.rand)
+  }
+  # Thinking is hard
+  rand.further <- rand.further |>
+    mutate(xbars = xbars + mu.upper.further) # shifting back
+  
+  # p-value  (one-sided)
+  obs.mean.further <- mean(finches_data$further)
+  p.val.further <- mean(rand.further$xbars <= obs.mean.further)
+  
+  if(p.val.further < 0.05){
+    break
+  }else{
+    mu.upper.further <- mu.upper.further + mu0.iterate
+  }
+}
+
+(further.rand.CI <- c(mu.lower.further, mu.upper.further))
+
+
+# Diff
+mu0.iterate <- 0.01
+starting.point.diff <- mean(finches_data$diff)
+
+mu.lower.diff <- starting.point.diff
+repeat{
+  rand.diff <- tibble(xbars = rep(NA, R))
+  
+  # PREPROCESSING: shift the data to be mean 0 under H0
+  x.shift.diff <- finches_data$diff - mu.lower.diff
+  # RANDOMIZE / SHUFFLE
+  for(i in 1:R){
+    curr.rand <- x.shift.diff *
+      sample(x = c(-1, 1),
+             size = length(x.shift.diff),
+             replace = T)
+    
+    rand.diff$xbars[i] <- mean(curr.rand)
+  }
+  # Thinking is hard
+  rand.diff <- rand.diff |>
+    mutate(xbars = xbars + mu.lower.diff) # shifting back
+  
+  # p-value  (one-sided)
+  (delta.diff <- abs(mean(finches_data$diff) - mu.lower.diff))
+  (low.diff <- mu.lower.diff - delta.diff) # mirror
+  (high.diff <- mu.lower.diff + delta.diff)   # xbar
+  (p.val.diff <- mean(rand.diff$xbars <= low.diff) +
+      mean(rand.diff$xbars >= high.diff))
+  
+  if(p.val.diff < 0.05){
+    break
+  }else{
+    mu.lower.diff <- mu.lower.diff - mu0.iterate
+  }
+}
+
+mu.upper.diff <- starting.point.diff
+repeat{
+  rand.diff <- tibble(xbars = rep(NA, R))
+  
+  # PREPROCESSING: shift the data to be mean 0 under H0
+  x.shift.diff <- finches_data$diff - mu.upper.diff
+  # RANDOMIZE / SHUFFLE
+  for(i in 1:R){
+    curr.rand <- x.shift.diff *
+      sample(x = c(-1, 1),
+             size = length(x.shift.diff),
+             replace = T)
+    
+    rand.diff$xbars[i] <- mean(curr.rand)
+  }
+  # Thinking is hard
+  rand.diff <- rand.diff |>
+    mutate(xbars = xbars + mu.upper.diff) # shifting back
+  
+  # p-value 
+  (delta.diff <- abs(mean(finches_data$closer) - mu.upper.diff))
+  (low.diff <- mu.upper.diff - delta.diff) # mirror
+  (high.diff <- mu.upper.diff + delta.diff)   # xbar
+  (p.val.diff <- mean(rand.closer$xbars <= low.diff) +
+      mean(rand.diff$xbars >= high.diff))
+  
+  if(p.val.diff < 0.05){
+    break
+  }else{
+    mu.upper.diff <- mu.upper.diff + mu0.iterate
+  }
+}
+
+(diff.rand.CI <- c(mu.lower.diff, mu.upper.diff))

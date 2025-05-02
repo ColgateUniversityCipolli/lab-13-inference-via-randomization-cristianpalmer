@@ -183,7 +183,7 @@ sampling distribution of the $T$ statistic:
 \hldef{(}\hlkwd{mean}\hldef{(resamples.null.closer.shifted))}
 \end{alltt}
 \begin{verbatim}
-## [1] 1.449368e-16
+## [1] -5.625167e-16
 \end{verbatim}
 \begin{alltt}
 \hlcom{# resamples.null.further}
@@ -205,7 +205,7 @@ sampling distribution of the $T$ statistic:
 \hldef{(}\hlkwd{mean}\hldef{(resamples.null.further.shifted))}
 \end{alltt}
 \begin{verbatim}
-## [1] -3.621881e-16
+## [1] -9.596768e-17
 \end{verbatim}
 \begin{alltt}
 \hlcom{# resamples.null.diff}
@@ -227,7 +227,7 @@ sampling distribution of the $T$ statistic:
 \hldef{(}\hlkwd{mean}\hldef{(resamples.null.diff.shifted))}
 \end{alltt}
 \begin{verbatim}
-## [1] 5.700163e-16
+## [1] -1.412204e-16
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -280,7 +280,7 @@ All three of the p-values are 0 which is what we expected. In lab 11, all three 
 \end{alltt}
 \begin{verbatim}
 ##        5% 
-## -1.582595
+## -1.626081
 \end{verbatim}
 \begin{alltt}
 \hldef{(firth_percentile_closer_t} \hlkwb{<-} \hlkwd{qt}\hldef{(}\hlnum{0.05}\hldef{,} \hlkwc{df}\hldef{=}\hlkwd{length}\hldef{(finches_data}\hlopt{$}\hldef{closer}\hlopt{-}\hlnum{1}\hldef{)))}
@@ -294,7 +294,7 @@ All three of the p-values are 0 which is what we expected. In lab 11, all three 
 \end{alltt}
 \begin{verbatim}
 ##        5% 
-## -1.636823
+## -1.669601
 \end{verbatim}
 \begin{alltt}
 \hldef{(firth_percentile_further_t} \hlkwb{<-} \hlkwd{qt}\hldef{(}\hlnum{0.05}\hldef{,} \hlkwc{df}\hldef{=}\hlkwd{length}\hldef{(finches_data}\hlopt{$}\hldef{further}\hlopt{-}\hlnum{1}\hldef{)))}
@@ -308,7 +308,7 @@ All three of the p-values are 0 which is what we expected. In lab 11, all three 
 \end{alltt}
 \begin{verbatim}
 ##        5% 
-## -1.602875
+## -1.566097
 \end{verbatim}
 \begin{alltt}
 \hldef{(firth_percentile_diff_t} \hlkwb{<-} \hlkwd{qt}\hldef{(}\hlnum{0.05}\hldef{,} \hlkwc{df}\hldef{=}\hlkwd{length}\hldef{(finches_data}\hlopt{$}\hldef{diff}\hlopt{-}\hlnum{1}\hldef{)))}
@@ -344,7 +344,7 @@ In all three cases the values are very similar to one another which is what we e
 ## 
 ## Intervals : 
 ## Level       BCa          
-## 95%   (-0.6028, -0.0423 )  
+## 95%   (-0.6028, -0.0545 )  
 ## Calculations and Intervals on Original Scale
 ## BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
 ## Based on 10000 bootstrap replicates
@@ -460,6 +460,16 @@ for the closer, further, and difference data, so perform the randomization proce
   \textbf{Hint:} You can ``search" for the lower bound from $Q_1$ and subtracting by 0.0001, 
   and the upper bound using $Q_3$ and increasing by 0.0001. You will continue until you find 
   the first value for which the two-sided $p$-value is greater than or equal to 0.05.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## [1] 0.1162231 0.1962231
+## [1] -0.2527244 -0.1527244
+## [1] 0.2689475 0.3589475
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+The randomization confidence intervals for closer and further are (0.1162231, 0.1962231) and (-0.2527244, -0.1527244) respectively. These are almost exactly in line with the t-test confidence intervals. The difference confidence interval was (0.2689475, 0.3589475), which has the lower bound we expected to see but the higher bound was less than it should be.
 \end{enumerate}
 \end{enumerate}
 \bibliography{bibliography}
