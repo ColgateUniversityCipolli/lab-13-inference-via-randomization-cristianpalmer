@@ -183,7 +183,7 @@ sampling distribution of the $T$ statistic:
 \hldef{(}\hlkwd{mean}\hldef{(resamples.null.closer.shifted))}
 \end{alltt}
 \begin{verbatim}
-## [1] -7.001941e-16
+## [1] 1.449368e-16
 \end{verbatim}
 \begin{alltt}
 \hlcom{# resamples.null.further}
@@ -205,7 +205,7 @@ sampling distribution of the $T$ statistic:
 \hldef{(}\hlkwd{mean}\hldef{(resamples.null.further.shifted))}
 \end{alltt}
 \begin{verbatim}
-## [1] -1.915357e-16
+## [1] -3.621881e-16
 \end{verbatim}
 \begin{alltt}
 \hlcom{# resamples.null.diff}
@@ -227,7 +227,7 @@ sampling distribution of the $T$ statistic:
 \hldef{(}\hlkwd{mean}\hldef{(resamples.null.diff.shifted))}
 \end{alltt}
 \begin{verbatim}
-## [1] 6.38134e-16
+## [1] 5.700163e-16
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -280,7 +280,7 @@ All three of the p-values are 0 which is what we expected. In lab 11, all three 
 \end{alltt}
 \begin{verbatim}
 ##        5% 
-## -1.599281
+## -1.582595
 \end{verbatim}
 \begin{alltt}
 \hldef{(firth_percentile_closer_t} \hlkwb{<-} \hlkwd{qt}\hldef{(}\hlnum{0.05}\hldef{,} \hlkwc{df}\hldef{=}\hlkwd{length}\hldef{(finches_data}\hlopt{$}\hldef{closer}\hlopt{-}\hlnum{1}\hldef{)))}
@@ -294,7 +294,7 @@ All three of the p-values are 0 which is what we expected. In lab 11, all three 
 \end{alltt}
 \begin{verbatim}
 ##        5% 
-## -1.674602
+## -1.636823
 \end{verbatim}
 \begin{alltt}
 \hldef{(firth_percentile_further_t} \hlkwb{<-} \hlkwd{qt}\hldef{(}\hlnum{0.05}\hldef{,} \hlkwc{df}\hldef{=}\hlkwd{length}\hldef{(finches_data}\hlopt{$}\hldef{further}\hlopt{-}\hlnum{1}\hldef{)))}
@@ -308,7 +308,7 @@ All three of the p-values are 0 which is what we expected. In lab 11, all three 
 \end{alltt}
 \begin{verbatim}
 ##        5% 
-## -1.563979
+## -1.602875
 \end{verbatim}
 \begin{alltt}
 \hldef{(firth_percentile_diff_t} \hlkwb{<-} \hlkwd{qt}\hldef{(}\hlnum{0.05}\hldef{,} \hlkwc{df}\hldef{=}\hlkwd{length}\hldef{(finches_data}\hlopt{$}\hldef{diff}\hlopt{-}\hlnum{1}\hldef{)))}
@@ -321,6 +321,46 @@ All three of the p-values are 0 which is what we expected. In lab 11, all three 
 In all three cases the values are very similar to one another which is what we expected.
   \item Compute the bootstrap confidence intervals using the resamples. How do these 
   compare to the $t$-test confidence intervals?
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+## BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+## Based on 10000 bootstrap replicates
+## 
+## CALL : 
+## boot.ci(boot.out = boots.closer, type = "bca")
+## 
+## Intervals : 
+## Level       BCa          
+## 95%   ( 0.1455,  0.3395 )  
+## Calculations and Intervals on Original Scale
+## Warning : BCa Intervals used Extreme Quantiles
+## Some BCa intervals may be unstable
+## BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+## Based on 10000 bootstrap replicates
+## 
+## CALL : 
+## boot.ci(boot.out = boots.further, type = "bca")
+## 
+## Intervals : 
+## Level       BCa          
+## 95%   (-0.6028, -0.0423 )  
+## Calculations and Intervals on Original Scale
+## BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+## Based on 10000 bootstrap replicates
+## 
+## CALL : 
+## boot.ci(boot.out = boots.diff, type = "bca")
+## 
+## Intervals : 
+## Level       BCa          
+## 95%   ( 0.1513,  0.9319 )  
+## Calculations and Intervals on Original Scale
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+The 95 percent closer confidence interval is (0.1542, 0.3395), which we can compare to the t-value closer confidence interval of 0.1173875, 0.1950586). The boot-strap confidence interval is much bigger than the t-test one which was not expected. The 95 percent further confidence interval is (-0.6028, -0.0545), which we can compare to the t-value closer confidence interval of (-0.2565176, -0.1489313). The boot-strap confidence interval again is much bigger than the t-test one which was not expected. Finally, the 95 percent diff confidence interval is (0.1513, 0.9319), which we can compare to the t-value closer confidence interval of (0.2719028, 0.4459921). The boot-strap confidence interval again is much bigger than the t-test one which was not expected.
+
 \end{enumerate}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -421,30 +461,6 @@ for the closer, further, and difference data, so perform the randomization proce
   and the upper bound using $Q_3$ and increasing by 0.0001. You will continue until you find 
   the first value for which the two-sided $p$-value is greater than or equal to 0.05.
 \end{enumerate}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Optional Question
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\item \textbf{Optional Challenge:} In this lab, you performed resampling to 
-approximate the sampling distribution of the $T$ statistic using
-\[T = \frac{\bar{x}_r - 0}{s/\sqrt{n}}.\]
-I'm curious whether it is better/worse/similar if we computed the statistics
-using the sample standard deviation of the resamples ($s_r$), instead of the 
-original sample ($s$)
-  \[T = \frac{\bar{x}_r - 0}{s_r/\sqrt{n}}.\]
-\begin{enumerate}
-  \item Perform a simulation study to evaluate the Type I error for conducting this
-hypothesis test both ways.
-  \item Using the same test case(s) as part (a), compute bootstrap confidence 
-  intervals and assess their coverage -- how often do we `capture' the parameter
-of interest?
-\end{enumerate}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% End Document
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{enumerate}
 \bibliography{bibliography}
 \end{document}

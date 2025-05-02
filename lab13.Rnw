@@ -209,6 +209,35 @@ All three of the p-values are 0 which is what we expected. In lab 11, all three 
 In all three cases the values are very similar to one another which is what we expected.
   \item Compute the bootstrap confidence intervals using the resamples. How do these 
   compare to the $t$-test confidence intervals?
+<<echo=FALSE, warning=FALSE>>=
+# Closer
+
+library(boot)
+boot.t <- function(d, i){
+  d[i]  
+}
+boots.closer <- boot(data = finches_data$closer,
+              statistic = boot.t,
+              R = R) 
+
+boot.ci(boots.closer, type="bca")
+
+# Further
+boots.further <- boot(data = finches_data$further,
+                     statistic = boot.t,
+                     R = R) 
+
+boot.ci(boots.further, type="bca")
+
+# Diff
+boots.diff <- boot(data = finches_data$diff,
+                      statistic = boot.t,
+                      R = R) 
+
+boot.ci(boots.diff, type="bca")
+@
+The 95 percent closer confidence interval is (0.1542, 0.3395), which we can compare to the t-value closer confidence interval of 0.1173875, 0.1950586). The boot-strap confidence interval is much bigger than the t-test one which was not expected. The 95 percent further confidence interval is (-0.6028, -0.0545), which we can compare to the t-value closer confidence interval of (-0.2565176, -0.1489313). The boot-strap confidence interval again is much bigger than the t-test one which was not expected. Finally, the 95 percent diff confidence interval is (0.1513, 0.9319), which we can compare to the t-value closer confidence interval of (0.2719028, 0.4459921). The boot-strap confidence interval again is much bigger than the t-test one which was not expected.
+
 \end{enumerate}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -291,30 +320,6 @@ p.high.rand = mean(rand.diff >= high)
   and the upper bound using $Q_3$ and increasing by 0.0001. You will continue until you find 
   the first value for which the two-sided $p$-value is greater than or equal to 0.05.
 \end{enumerate}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Optional Question
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\item \textbf{Optional Challenge:} In this lab, you performed resampling to 
-approximate the sampling distribution of the $T$ statistic using
-\[T = \frac{\bar{x}_r - 0}{s/\sqrt{n}}.\]
-I'm curious whether it is better/worse/similar if we computed the statistics
-using the sample standard deviation of the resamples ($s_r$), instead of the 
-original sample ($s$)
-  \[T = \frac{\bar{x}_r - 0}{s_r/\sqrt{n}}.\]
-\begin{enumerate}
-  \item Perform a simulation study to evaluate the Type I error for conducting this
-hypothesis test both ways.
-  \item Using the same test case(s) as part (a), compute bootstrap confidence 
-  intervals and assess their coverage -- how often do we `capture' the parameter
-of interest?
-\end{enumerate}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% End Document
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{enumerate}
 \bibliography{bibliography}
 \end{document}

@@ -156,14 +156,14 @@ boots.closer <- boot(data = finches_data$closer,
 boot.ci(boots.closer, type="bca")
 
 # Further
-boots.further <- boot(data = finches_data$closer,
+boots.further <- boot(data = finches_data$further,
                      statistic = boot.t,
                      R = R) 
 
 boot.ci(boots.further, type="bca")
 
 # Diff
-boots.diff <- boot(data = finches_data$closer,
+boots.diff <- boot(data = finches_data$diff,
                       statistic = boot.t,
                       R = R) 
 
